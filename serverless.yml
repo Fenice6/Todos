@@ -84,6 +84,7 @@ functions:
       - http:
           method: post
           path: todos
+          cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
 
@@ -94,6 +95,7 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+          cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
 
@@ -104,6 +106,7 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+          cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
 
@@ -114,6 +117,7 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
+          cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
 
