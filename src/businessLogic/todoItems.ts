@@ -11,9 +11,9 @@ const todoAccess = new TodoAccess() //la logica di come fisicamente accedere ai 
 
 export async function getAllTodoItems(jwtToken: string): Promise<TodoItem[]> {
 
-  parseUserId(jwtToken)
+  const userId = parseUserId(jwtToken)
 
-  return todoAccess.getAllTodoItems()
+  return todoAccess.getTodoItemByUserId(userId)
 }
 
 export async function createTodo(

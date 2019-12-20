@@ -16,19 +16,9 @@ export class TodoAccess {
     private readonly docClient: DocumentClient = createDynamoDBClient(), //permette di lavorare con dynamodb
     private readonly todoTable = process.env.TODOS_TABLE, //nome della tabella dove salvare i dati
     private readonly todoIndex = process.env.TODOS_ID_INDEX, //nome dell'indice della tabella dove i dati vengono salvati
+    private readonly userIndex = process.env.USER_ID_INDEX, //nome dell'indice della tabella dove i dati vengono salvati
     private readonly bucketName = process.env.TODOS_S3_BUCKET, //nome del bucket dove vengono salvati i dati
     private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION) { //Dopo quanto deve spirare l'url generato
-  }
-
-  async getAllTodoItems(): Promise<TodoItem[]> {
-    console.log("Starting createTodoItem");
-    const result = await this.docClient.scan({
-      TableName: this.todoTable
-    }).promise()
-    console.log("Completed createTodoItem");
-
-    const items = result.Items
-    return items as TodoItem[]
   }
 
   async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
@@ -95,6 +85,22 @@ export class TodoAccess {
     const item = result.Items[0]
     console.log(item);
     return item as TodoItem
+  }
+
+  async getTodoItemByUserId(userId: string): Promise<TodoItem[]> {
+    console.log("Starting getTodoItemByUserId");
+    const result = await this.docClient.query({
+      TableName: this.todoTable,
+      IndexName: this.userIndex,
+      KeyConditionExpression: '#k = :uId ',
+      ExpressionAttributeNames: {'#k' : 'userId'},
+      ExpressionAttributeValues:{':uId' : userId}
+    }).promise()
+    console.log("Completed getTodoItemByUserId");
+    console.log("Found " + result.Count + " elements");
+    const items = result.Items
+    console.log(items);
+    return items as TodoItem[]
   }
 
   async getUploadUrl(todoId: string): Promise<string> {

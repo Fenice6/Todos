@@ -18,6 +18,7 @@ provider:
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_NAME_INDEX: TodosNameIndex
     TODOS_ID_INDEX: TodosIdIndex
+    USER_ID_INDEX: UserIdIndex
     TODOS_S3_BUCKET: serverless-todos-t8uffesg68-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
@@ -79,8 +80,8 @@ functions:
     iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Scan
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.USER_ID_INDEX}
 
   # TODO: Configure this function
   CreateTodo:
@@ -200,6 +201,8 @@ resources:
             AttributeType: S
           - AttributeName: name
             AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
         KeySchema:
           - AttributeName: todoId
             KeyType: HASH
@@ -217,6 +220,12 @@ resources:
           - IndexName: ${self:provider.environment.TODOS_ID_INDEX}
             KeySchema:
             - AttributeName: todoId
+              KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ${self:provider.environment.USER_ID_INDEX}
+            KeySchema:
+            - AttributeName: userId
               KeyType: HASH
             Projection:
               ProjectionType: ALL
