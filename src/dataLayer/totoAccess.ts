@@ -79,11 +79,12 @@ export class TodoAccess {
 
   async getTodoItemById(key: any): Promise<TodoItem> {
     console.log("Starting getTodoItemById");
-    const result = await this.docClient.scan({
+    const result = await this.docClient.query({
       TableName: this.todoTable,
       IndexName: this.todoIndex,
-      FilterExpression: "todoId = :id",
-      ExpressionAttributeValues: {':id': key.todoId}
+      KeyConditionExpression: '#k = :id ',
+      ExpressionAttributeNames: {'#k' : 'todoId'},
+      ExpressionAttributeValues:{':id' : key.todoId}
     }).promise()
     console.log("Completed getTodoItemById");
     console.log("Found " + result.Count + " element (it must be unique)");
